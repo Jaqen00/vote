@@ -1,13 +1,14 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
+import os
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key'  # 用于flash消息
+app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')
 
 # 存储投票数据
 votes = {
-    'votes': [],  # 存储所有投票
-    'revealed': False,  # 控制是否显示投票结果
-    'can_vote': True  # 控制是否可以投票
+    'votes': [],
+    'revealed': False,
+    'can_vote': True
 }
 
 @app.route('/')
@@ -27,7 +28,7 @@ def vote():
     vote_choice = request.form.get('vote')
     if not votes['revealed']:
         votes['votes'].append(vote_choice)
-        votes['can_vote'] = False  # 投票后禁止继续投票
+        votes['can_vote'] = False
         flash('投票成功！请等待其他人查看结果', 'success')
     return redirect(url_for('index'))
 
@@ -46,4 +47,5 @@ def reset():
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
