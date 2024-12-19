@@ -1,1 +1,1 @@
-web: gunicorn vote:app 
+web: gunicorn --worker-class eventlet vote:app 

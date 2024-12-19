@@ -3,7 +3,7 @@
 <head>
     <title>阿瓦隆任务投票</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="refresh" content="3">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.0.1/socket.io.js"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -126,23 +126,22 @@
             }
         }
 
-        .vote-status {
-            font-size: 1.2em;
-            margin: 20px auto;
-            padding: 15px;
-            background-color: #e3f2fd;
+        .status-bar {
+            background-color: #e9ecef;
+            padding: 10px;
+            margin-bottom: 20px;
             border-radius: 10px;
-            width: 90%;
-            max-width: 500px;
-        }
-
-        .vote-status p {
-            margin: 5px 0;
+            font-size: 1.1em;
         }
     </style>
 </head>
 <body>
     <h1>阿瓦隆任务投票</h1>
+    
+    <div class="status-bar">
+        <p>在线人数：<span id="online-count">{{ online_count }}</span></p>
+        <p>已投票人数：<span id="vote-count">{{ total_votes }}</span></p>
+    </div>
     
     {% with messages = get_flashed_messages(with_categories=true) %}
         {% if messages %}
@@ -153,16 +152,14 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
-
-    <div class="vote-status">
-        <p>当前已投票人数：{{ total_votes }}</p>
-    </div>
     
     {% if not votes['revealed'] %}
     <div class="vote-buttons">
         <form action="{{ url_for('vote') }}" method="post" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <input type="submit" name="vote" value="yes" class="button yes-button">
-            <input type="submit" name="vote" value="no" class="button no-button">
+            <input type="submit" name="vote" value="yes" class="button yes-button {% if has_voted %}disabled{% endif %}" 
+                   {% if has_voted %}disabled{% endif %}>
+            <input type="submit" name="vote" value="no" class="button no-button {% if has_voted %}disabled{% endif %}"
+                   {% if has_voted %}disabled{% endif %}>
         </form>
     </div>
     
@@ -174,14 +171,41 @@
     {% if votes['revealed'] %}
     <div class="results">
         <h2>投票结果</h2>
-        <p>总票数：{{ total_votes }}</p>
-        <p>赞成票：{{ yes_votes }}</p>
-        <p>反对票：{{ no_votes }}</p>
+        <p>总票数：<span id="total-votes">{{ total_votes }}</span></p>
+        <p>赞成票：<span id="yes-votes">{{ yes_votes }}</span></p>
+        <p>反对票：<span id="no-votes">{{ no_votes }}</span></p>
     </div>
     {% endif %}
 
     <form action="{{ url_for('reset') }}" method="post">
         <input type="submit" value="重置投票" class="button action-button">
     </form>
+
+    <script>
+        const socket = io();
+        
+        socket.on('connect', () => {
+            console.log('Connected to server');
+        });
+
+        socket.on('user_count', (data) => {
+            document.getElementById('online-count').textContent = data.count;
+        });
+
+        socket.on('vote_update', (data) => {
+            document.getElementById('vote-count').textContent = data.total_votes;
+            document.getElementById('total-votes').textContent = data.total_votes;
+            document.getElementById('yes-votes').textContent = data.yes_votes;
+            document.getElementById('no-votes').textContent = data.no_votes;
+        });
+
+        socket.on('reveal_votes', () => {
+            location.reload();
+        });
+
+        socket.on('reset_votes', () => {
+            location.reload();
+        });
+    </script>
 </body>
 </html> 
