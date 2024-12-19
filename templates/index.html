@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>阿瓦隆任务投票</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            text-align: center;
+        }
+        .vote-buttons {
+            margin: 20px 0;
+        }
+        .button {
+            padding: 15px 30px;
+            margin: 10px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .yes-button {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .no-button {
+            background-color: #f44336;
+            color: white;
+        }
+        .action-button {
+            background-color: #2196F3;
+            color: white;
+        }
+        .results {
+            margin: 20px 0;
+            padding: 20px;
+            background-color: #f0f0f0;
+            border-radius: 5px;
+        }
+        .flash-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+        }
+        .flash-success {
+            background-color: #dff0d8;
+            color: #3c763d;
+            border: 1px solid #d6e9c6;
+        }
+        .flash-error {
+            background-color: #f2dede;
+            color: #a94442;
+            border: 1px solid #ebccd1;
+        }
+        .disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+    </style>
+</head>
+<body>
+    <h1>阿瓦隆任务投票</h1>
+    
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="flash-message flash-{{ category }}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    {% if not votes['revealed'] %}
+    <div class="vote-buttons">
+        <form action="{{ url_for('vote') }}" method="post" style="display: inline;">
+            <input type="submit" name="vote" value="yes" class="button yes-button {% if not votes['can_vote'] %}disabled{% endif %}" 
+                   {% if not votes['can_vote'] %}disabled{% endif %}>
+            <input type="submit" name="vote" value="no" class="button no-button {% if not votes['can_vote'] %}disabled{% endif %}"
+                   {% if not votes['can_vote'] %}disabled{% endif %}>
+        </form>
+    </div>
+    
+    <form action="{{ url_for('reveal') }}" method="post">
+        <input type="submit" value="查看投票结果" class="button action-button">
+    </form>
+    {% endif %}
+
+    {% if votes['revealed'] %}
+    <div class="results">
+        <h2>投票结果</h2>
+        <p>总票数：{{ total_votes }}</p>
+        <p>赞成票：{{ yes_votes }}</p>
+        <p>反对票：{{ no_votes }}</p>
+    </div>
+    {% endif %}
+
+    <form action="{{ url_for('reset') }}" method="post">
+        <input type="submit" value="重置投票" class="button action-button">
+    </form>
+</body>
+</html> 
