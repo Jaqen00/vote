@@ -2,61 +2,127 @@
 <html>
 <head>
     <title>阿瓦隆任务投票</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <style>
         body {
             font-family: Arial, sans-serif;
-            max-width: 600px;
+            max-width: 100%;
             margin: 0 auto;
             padding: 20px;
             text-align: center;
+            box-sizing: border-box;
         }
-        .vote-buttons {
+
+        h1 {
+            font-size: 2em;
             margin: 20px 0;
         }
-        .button {
-            padding: 15px 30px;
-            margin: 10px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
+
+        .vote-buttons {
+            margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
         }
+
+        .button {
+            width: 80%;
+            max-width: 300px;
+            padding: 20px;
+            margin: 5px;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
         .yes-button {
             background-color: #4CAF50;
             color: white;
         }
+
         .no-button {
             background-color: #f44336;
             color: white;
         }
+
         .action-button {
             background-color: #2196F3;
             color: white;
+            margin: 15px auto;
+            display: block;
         }
+
         .results {
-            margin: 20px 0;
+            margin: 20px auto;
             padding: 20px;
             background-color: #f0f0f0;
-            border-radius: 5px;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
         }
-        .flash-message {
-            padding: 10px;
+
+        .results h2 {
+            font-size: 1.5em;
+            margin-bottom: 15px;
+        }
+
+        .results p {
+            font-size: 1.2em;
             margin: 10px 0;
-            border-radius: 5px;
         }
+
+        .flash-message {
+            padding: 15px;
+            margin: 15px auto;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+            font-size: 1.1em;
+        }
+
         .flash-success {
             background-color: #dff0d8;
             color: #3c763d;
             border: 1px solid #d6e9c6;
         }
+
         .flash-error {
             background-color: #f2dede;
             color: #a94442;
             border: 1px solid #ebccd1;
         }
+
         .disabled {
             opacity: 0.6;
             cursor: not-allowed;
+        }
+
+        /* 移动端特别优化 */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            .button {
+                width: 90%;
+                padding: 25px;
+                font-size: 1.3em;
+            }
+
+            .results {
+                width: 95%;
+            }
+
+            .flash-message {
+                width: 95%;
+            }
         }
     </style>
 </head>
@@ -75,7 +141,7 @@
     
     {% if not votes['revealed'] %}
     <div class="vote-buttons">
-        <form action="{{ url_for('vote') }}" method="post" style="display: inline;">
+        <form action="{{ url_for('vote') }}" method="post" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
             <input type="submit" name="vote" value="yes" class="button yes-button {% if not votes['can_vote'] %}disabled{% endif %}" 
                    {% if not votes['can_vote'] %}disabled{% endif %}>
             <input type="submit" name="vote" value="no" class="button no-button {% if not votes['can_vote'] %}disabled{% endif %}"
