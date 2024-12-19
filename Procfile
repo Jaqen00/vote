@@ -1,1 +1,1 @@
-web: gunicorn --worker-class eventlet vote:app 
+web: gunicorn --worker-class geventwebsocket.gunicorn.workers.GeventWebSocketWorker vote:app --log-file - 
