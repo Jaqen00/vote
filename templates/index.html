@@ -3,6 +3,7 @@
 <head>
     <title>阿瓦隆任务投票</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="refresh" content="3">
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -124,6 +125,20 @@
                 width: 95%;
             }
         }
+
+        .vote-status {
+            font-size: 1.2em;
+            margin: 20px auto;
+            padding: 15px;
+            background-color: #e3f2fd;
+            border-radius: 10px;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .vote-status p {
+            margin: 5px 0;
+        }
     </style>
 </head>
 <body>
@@ -138,14 +153,16 @@
             {% endfor %}
         {% endif %}
     {% endwith %}
+
+    <div class="vote-status">
+        <p>当前已投票人数：{{ total_votes }}</p>
+    </div>
     
     {% if not votes['revealed'] %}
     <div class="vote-buttons">
         <form action="{{ url_for('vote') }}" method="post" style="width: 100%; display: flex; flex-direction: column; align-items: center;">
-            <input type="submit" name="vote" value="yes" class="button yes-button {% if not votes['can_vote'] %}disabled{% endif %}" 
-                   {% if not votes['can_vote'] %}disabled{% endif %}>
-            <input type="submit" name="vote" value="no" class="button no-button {% if not votes['can_vote'] %}disabled{% endif %}"
-                   {% if not votes['can_vote'] %}disabled{% endif %}>
+            <input type="submit" name="vote" value="yes" class="button yes-button">
+            <input type="submit" name="vote" value="no" class="button no-button">
         </form>
     </div>
     

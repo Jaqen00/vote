@@ -6,9 +6,8 @@ app.secret_key = os.environ.get('SECRET_KEY', 'your_secret_key')
 
 # 存储投票数据
 votes = {
-    'votes': [],
-    'revealed': False,
-    'can_vote': True
+    'votes': [],  # 存储所有投票
+    'revealed': False  # 控制是否显示投票结果
 }
 
 @app.route('/')
@@ -21,19 +20,19 @@ def index():
 
 @app.route('/vote', methods=['POST'])
 def vote():
-    if not votes['can_vote']:
-        flash('当前已有人投票，请等待投票结果公布后再开始新的投票', 'error')
-        return redirect(url_for('index'))
-    
-    vote_choice = request.form.get('vote')
     if not votes['revealed']:
+        vote_choice = request.form.get('vote')
         votes['votes'].append(vote_choice)
-        votes['can_vote'] = False
-        flash('投票成功！请等待其他人查看结果', 'success')
+        flash('投票成功！', 'success')
+    else:
+        flash('投票已结束，无法继续投票', 'error')
     return redirect(url_for('index'))
 
 @app.route('/reveal', methods=['POST'])
 def reveal():
+    if len(votes['votes']) == 0:
+        flash('还没有人投票！', 'error')
+        return redirect(url_for('index'))
     votes['revealed'] = True
     flash('投票结果已公布！', 'success')
     return redirect(url_for('index'))
@@ -42,7 +41,6 @@ def reveal():
 def reset():
     votes['votes'].clear()
     votes['revealed'] = False
-    votes['can_vote'] = True
     flash('投票已重置，可以开始新的投票', 'success')
     return redirect(url_for('index'))
 
